@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b10">
+<title>Mi Música</title>
+<style>
+:root{--bg:#0b0b10;--panel:#14141c;--card:#1a1a24;--hover:#232331;--txt:#f2f2f5;--mut:#9a9aab;--acc:#1ed760;--acc2:#b48cff;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:1fr auto;height:100vh;height:100dvh}
+aside{background:#000;padding:22px 14px;display:flex;flex-direction:column;gap:6px}
+.logo{font-weight:800;font-size:1.3rem;padding:0 10px 18px;letter-spacing:.3px}
+.logo span{color:var(--acc)}
+.nav{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:10px;color:var(--mut);font-weight:600;transition:.2s}
+.nav:hover{color:var(--txt)}
+.nav.on{color:var(--txt);background:var(--panel)}
+.nav svg{width:22px;height:22px;fill:currentColor}
+main{overflow-y:auto;background:linear-gradient(180deg,#1d1830 0,var(--bg) 340px);padding:26px 28px 40px;scroll-behavior:smooth}
+.view{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:1.9rem;font-weight:800;margin-bottom:6px}
+h2{font-size:1.25rem;font-weight:700;margin:28px 0 14px;display:flex;justify-content:space-between;align-items:center}
+.sub{color:var(--mut);font-size:.92rem}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:180px;gap:16px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
+.row::-webkit-scrollbar{height:6px}.row::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.card{background:var(--card);border-radius:var(--r);padding:12px;transition:.25s;position:relative;scroll-snap-align:start;cursor:pointer}
+.card:hover{background:var(--hover);transform:translateY(-3px)}
+.cover{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#222;box-shadow:0 8px 24px #0007}
+.cover img{width:100%;height:100%;object-fit:cover}
+.cover .mosaic{display:grid;grid-template-columns:1fr 1fr;height:100%}
+.cover .mosaic img{aspect-ratio:1}
+.cover .tag{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;font-weight:800;font-size:1rem;background:linear-gradient(transparent,#000c);text-shadow:0 1px 4px #000}
+.fab{position:absolute;right:8px;bottom:8px;width:44px;height:44px;border-radius:50%;background:var(--acc);color:#000;display:grid;place-items:center;opacity:0;transform:translateY(8px);transition:.25s;box-shadow:0 6px 16px #0008}
+.card:hover .fab{opacity:1;transform:none}
+.fab svg{width:20px;height:20px;fill:#000}
+.ct{font-weight:700;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs{color:var(--mut);font-size:.8rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.add2{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:#000a;display:grid;place-items:center;opacity:0;transition:.2s;font-size:1.1rem}
+.card:hover .add2{opacity:1}
+.btn{background:var(--acc);color:#000;font-weight:700;padding:11px 20px;border-radius:999px;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:scale(1.04)}
+.btn.sec{background:transparent;color:var(--txt);border:1px solid #444}
+.btn.sm{padding:7px 14px;font-size:.85rem}
+.search{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.search input,.field{flex:1;min-width:220px;padding:13px 18px;border-radius:999px;border:1px solid #2c2c3a;background:var(--panel);color:var(--txt);font-size:.95rem;outline:none;transition:.2s}
+.search input:focus,.field:focus{border-color:var(--acc)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid #2c2c3a;font-weight:600;font-size:.9rem;transition:.2s}
+.chip:hover{border-color:#555}
+.chip.on{background:var(--acc);color:#000;border-color:var(--acc)}
+.genre{border-radius:var(--r);padding:16px;height:110px;font-weight:800;font-size:1.1rem;position:relative;overflow:hidden;transition:.25s;cursor:pointer}
+.genre:hover{transform:scale(1.03)}
+.genre img{position:absolute;right:-14px;bottom:-8px;width:90px;transform:rotate(22deg);border-radius:6px;box-shadow:0 4px 12px #0008}
+.list{display:flex;flex-direction:column}
+.tr{display:grid;grid-template-columns:28px 48px 1fr auto auto;gap:12px;align-items:center;padding:7px 10px;border-radius:8px;transition:.15s;cursor:pointer}
+.tr:hover{background:var(--hover)}
+.tr .n{color:var(--mut);text-align:center;font-size:.85rem}
+.tr img{width:48px;height:48px;object-fit:cover;border-radius:6px}
+.tr .tt{min-width:0}.tr .tt b{display:block;font-weight:600;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .tt small{color:var(--mut);font-size:.8rem}
+.tr.act b{color:var(--acc)}
+.tr .ib{color:var(--mut);padding:6px 8px;border-radius:6px;font-size:1rem}
+.tr .ib:hover{color:var(--txt);background:#333}
+.tr .du{color:var(--mut);font-size:.82rem}
+.hero{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px}
+.hero .cover{width:170px;margin:0}
+.pltabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.empty{color:var(--mut);padding:30px 0;text-align:center}
+/* bar */
+.bar{grid-column:1/-1;background:#000;border-top:1px solid #1d1d26;display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:16px;padding:10px 18px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.np{display:flex;align-items:center;gap:12px;min-width:0}
+#pbox{width:112px;height:63px;border-radius:8px;overflow:hidden;background:#111;flex-shrink:0}
+#pbox iframe{width:100%;height:100%;display:block}
+.np .tt{min-width:0}.np b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np small{color:var(--mut);font-size:.78rem}
+.ctr{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cb{display:flex;align-items:center;gap:14px}
+.cb button{color:var(--mut);width:36px;height:36px;display:grid;place-items:center;border-radius:50%;transition:.15s}
+.cb button:hover{color:var(--txt)}
+.cb button svg{width:20px;height:20px;fill:currentColor}
+.cb button.on{color:var(--acc)}
+.cb #play{background:var(--txt);color:#000;width:42px;height:42px}
+.cb #play:hover{transform:scale(1.07)}
+.prog{display:flex;align-items:center;gap:8px;width:100%;font-size:.72rem;color:var(--mut)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:linear-gradient(var(--acc),var(--acc)) 0/var(--p,0%) 100% no-repeat #3a3a46;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:none}
+.vol{display:flex;align-items:center;gap:8px;justify-content:flex-end;color:var(--mut)}
+.vol input{max-width:120px}
+/* modal */
+.modal{position:fixed;inset:0;background:#000c;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.show{display:flex;animation:fade .3s}
+.mbox{background:var(--panel);border-radius:20px;padding:26px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto}
+.mbox h3{margin:20px 0 12px;font-size:1rem;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:var(--acc);color:#000;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;transition:.3s;z-index:60;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.menu{position:fixed;background:#282834;border-radius:10px;padding:6px;z-index:70;box-shadow:0 10px 30px #000a;min-width:190px;display:none}
+.menu button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;font-size:.9rem}
+.menu button:hover{background:#3a3a48}
+/* mobile */
+@media(max-width:760px){
+ .app{grid-template-columns:1fr;grid-template-rows:1fr auto auto}
+ aside{grid-row:3;flex-direction:row;justify-content:space-around;padding:6px 4px;padding-bottom:max(6px,env(safe-area-inset-bottom));border-top:1px solid #1d1d26}
+ .logo{display:none}
+ .nav{flex-direction:column;gap:3px;font-size:.68rem;padding:6px 8px;background:none!important}
+ .nav.on{color:var(--acc)}
+ main{padding:18px 16px 30px}
+ h1{font-size:1.5rem}
+ .bar{grid-row:2;grid-template-columns:1fr auto;padding:8px 12px;gap:10px}
+ .ctr{display:contents}
+ .prog{grid-column:1/-1;order:3}
+ .vol{display:none}
+ #pbox{width:88px;height:50px}
+ .cb{gap:2px}.cb .hm{display:none}
+ .row{grid-auto-columns:150px}
+ .grid{grid-template-columns:repeat(2,1fr);gap:12px}
+ .fab,.add2{opacity:1;transform:none}
+ .fab{width:38px;height:38px}
+ .tr{grid-template-columns:42px 1fr auto;gap:10px}.tr .n,.tr .du{display:none}.tr img{width:42px;height:42px}
+ .toast{bottom:170px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="logo">🎧 Mi <span>Música</span></div>
+ <button class="nav" data-v="inicio"><svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>Inicio</button>
+ <button class="nav" data-v="explorar"><svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 016.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z"/></svg>Explorar</button>
+ <button class="nav" data-v="gustos"><svg viewBox="0 0 24 24"><path d="M12 21l-1.4-1.3C5.4 15 2 12 2 8.4 2 5.4 4.4 3 7.4 3c1.7 0 3.4.8 4.6 2.1C13.2 3.8 14.9 3 16.6 3 19.6 3 22 5.4 22 8.4c0 3.6-3.4 6.6-8.6 11.3z"/></svg>Mis gustos</button>
+ <button class="nav" data-v="lista"><svg viewBox="0 0 24 24"><path d="M3 5h12v2H3zm0 4h12v2H3zm0 4h8v2H3zm14-8h4v2h-2v9a3 3 0 11-2-2.8z"/></svg>Mi lista</button>
+</aside>
+<main id="main"></main>
+<div class="bar">
+ <div class="np"><div id="pbox"><div id="player"></div></div><div class="tt"><b id="npT">Nada sonando</b><small id="npA">Elige una canción</small></div></div>
+ <div class="ctr">
+  <div class="cb">
+   <button id="shuf" class="hm" title="Aleatorio"><svg viewBox="0 0 24 24"><path d="M10.6 9.2L5.4 4 4 5.4l5.2 5.2zM14.5 4l2 2L4 18.6 5.4 20 17.9 7.5l2.1 2V4zm.3 9.4l-1.4 1.4 3.1 3.1-2 2.1H20v-5.5l-2 2z"/></svg></button>
+   <button id="prev" title="Anterior"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
+   <button id="play" title="Reproducir"><svg viewBox="0 0 24 24" id="pico"><path d="M8 5v14l11-7z"/></svg></button>
+   <button id="next" title="Siguiente"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg></button>
+   <button id="rep" class="hm" title="Repetir"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg></button>
+  </div>
+  <div class="prog"><span id="cur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0"><span id="dur">0:00</span></div>
+ </div>
+ <div class="vol">🔊<input type="range" id="vol" min="0" max="100"></div>
+</div>
+</div>
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+<div class="menu" id="menu"></div>
+<script>
+const CAT={"genres":[{"id":"reggaeton","name":"Reggaetón","color":"#e91e63","related":["trap","poplatino"]},{"id":"salsa","name":"Salsa","color":"#ff7043","related":["cumbia","bachata"]},{"id":"cumbia","name":"Cumbia peruana","color":"#ffb300","related":["salsa","bachata"]},{"id":"bachata","name":"Bachata","color":"#ec407a","related":["salsa","baladas"]},{"id":"poplatino","name":"Pop latino","color":"#ab47bc","related":["reggaeton","baladas"]},{"id":"rock","name":"Rock en español","color":"#5c6bc0","related":["baladas","poplatino"]},{"id":"trap","name":"Trap latino","color":"#7e57c2","related":["reggaeton","electronica"]},{"id":"electronica","name":"Electrónica","color":"#26c6da","related":["hits","trap"]},{"id":"baladas","name":"Baladas","color":"#66bb6a","related":["bachata","rock"]},{"id":"hits","name":"Hits en inglés","color":"#42a5f5","related":["electronica","poplatino"]}],"songs":[{"id":"Cr8K88UcO0s","t":"Bad Bunny - Tití Me Preguntó (Official Video) | Un Verano Sin Ti","a":"Bad Bunny","g":"reggaeton","d":291},{"id":"ca48oMV59LU","t":"KAROL G - Provenza (Official Video)","a":"Karol G","g":"reggaeton","d":227},{"id":"TapXs54Ah3E","t":"J. Balvin - Ay Vamos (Official Video)","a":"J Balvin","g":"reggaeton","d":267},{"id":"wnJ6LuUFpMo","t":"J Balvin, Willy William - Mi Gente (Official Video)","a":"J Balvin","g":"reggaeton","d":186},{"id":"tbneQDc2H3I","t":"KAROL G, Nicki Minaj - Tusa (Official Video)","a":"Karol G","g":"reggaeton","d":204},{"id":"QCZZwZQ4qNs","t":"KAROL G - Si Antes Te Hubiera Conocido | Coke Studio","a":"Karol G","g":"reggaeton","d":196},{"id":"zZjSX01P5dE","t":"J. Balvin - Ginza (Official Video)","a":"J Balvin","g":"reggaeton","d":229},{"id":"kJQP7kiw5Fk","t":"Luis Fonsi - Despacito ft. Daddy Yankee","a":"Daddy Yankee","g":"reggaeton","d":282},{"id":"v_Tgq5OUrmE","t":"Bad bunny  dtmf  video official","a":"Bad Bunny","g":"reggaeton","d":225},{"id":"DiItGE3eAyQ","t":"Daddy Yankee & Snow - Con Calma (Official Video)","a":"Daddy Yankee","g":"reggaeton","d":211},{"id":"saGYMhApaH8","t":"Bad Bunny (ft. Chencho Corleone) - Me Porto Bonito (Official Video) | Un Verano Sin Ti","a":"Bad Bunny","g":"reggaeton","d":192},{"id":"CCF1_jI8Prk","t":"Daddy Yankee - Gasolina (Video Oficial)","a":"Daddy Yankee","g":"reggaeton","d":254},{"id":"oD5f55ohsc4","t":"Feid - Normal (Official Video)","a":"Feid","g":"reggaeton","d":171},{"id":"x2oUajHp8pg","t":"Feid, ATL Jacob - LUNA (Official Video)","a":"Feid","g":"reggaeton","d":200},{"id":"KWGrPNqz4uc","t":"Ozuna - Se Preparó (Video Oficial) | Odisea","a":"Ozuna","g":"reggaeton","d":231},{"id":"cD5T1Y4b7wA","t":"Feid, Young Miko - Classy 101 (Official Video)","a":"Feid","g":"reggaeton","d":196},{"id":"BNo0vkEYWRc","t":"Hector Lavoe - El Cantante (salsa)","a":"Héctor Lavoe","g":"salsa","d":653},{"id":"32F2d-wj4Xw","t":"Ozuna- BAILA BAILA BAILA (Video Oficial)","a":"Ozuna","g":"reggaeton","d":208},{"id":"-xWT7Ei4dXw","t":"HECTOR LAVOE - MI GENTE (Video clip) - Animación","a":"Héctor Lavoe","g":"salsa","d":329},{"id":"Ns9YYSqLxyI","t":"Marc Anthony - Valio La Pena (Salsa Version)","a":"Marc Anthony","g":"salsa","d":293},{"id":"3VmoZrxXbmg","t":"Marc Anthony - Flor Pálida (Official Video)","a":"Marc Anthony","g":"salsa","d":298},{"id":"qYkpURie5cU","t":"Hector Lavoe - Periodico De Ayer","a":"Héctor Lavoe","g":"salsa","d":422},{"id":"YXnjy5YlDwk","t":"Marc Anthony - Vivir Mi Vida (Official Video)","a":"Marc Anthony","g":"salsa","d":327},{"id":"ixkoVwKQaJg","t":"DJ Snake - Taki Taki ft. Selena Gomez, Ozuna, Cardi B (Official Music Video)","a":"Ozuna","g":"reggaeton","d":232},{"id":"7KxkMLAZlzw","t":"Cali Pachanguero, Grupo Niche - Video Oficial","a":"Grupo Niche","g":"salsa","d":291},{"id":"fEhnwoVjrgc","t":"Gotas De Lluvia, Grupo Niche - Video Letra","a":"Grupo Niche","g":"salsa","d":337},{"id":"UwnmzIgNzyU","t":"Grupo Niche -  Una Aventura  (Video Oficial)","a":"Grupo Niche","g":"salsa","d":360},{"id":"imeXSRNRMeg","t":"Celia Cruz - La Negra Tiene Tumbao (Official Video)","a":"Celia Cruz","g":"salsa","d":260},{"id":"0nBFWzpWXuM","t":"La Vida Es Un Carnaval - Celia Cruz","a":"Celia Cruz","g":"salsa","d":278},{"id":"AXN-_asIaYs","t":"Celia Cruz & The Fania All Stars - Quimbara - Zaire, Africa 1974","a":"Celia Cruz","g":"salsa","d":352},{"id":"KPWvD5vbJ8I","t":"Willie Colón & Ruben Blades - Plástico","a":"Rubén Blades","g":"salsa","d":428},{"id":"GyhwmZAQB-Y","t":"Decisiones - Ruben Blades - VideoClip","a":"Rubén Blades","g":"salsa","d":305},{"id":"0hcoNykaI3k","t":"Ruben Blades   Pedro Navaja Video Original","a":"Rubén Blades","g":"salsa","d":288},{"id":"6C4GHCDMAVM","t":"Señor Mentira - Daniela Darcourt (Video Oficial)","a":"Daniela Darcourt","g":"salsa","d":272},{"id":"zOuued9QYew","t":"Parte De Mi Vida - Daniela Darcourt Ft. Caridad Plaza (El Reencuentro)","a":"Daniela Darcourt","g":"salsa","d":446},{"id":"7ovE33oPcfE","t":"Adiós Amor - Daniela Darcourt (Video Oficial)","a":"Daniela Darcourt","g":"salsa","d":269},{"id":"_k5fq7NpgAM","t":"Agua Marina - Esta Vez me Enamoré (En Vivo)","a":"Agua Marina","g":"cumbia","d":249},{"id":"mW60-VohczU","t":"Agua Marina - Paloma Ajena (En Vivo OFICIAL)","a":"Agua Marina","g":"cumbia","d":247},{"id":"w_LWtxTDr44","t":"Grupo 5 - Motor y Motivo (Official Lyric Video)","a":"Grupo 5","g":"cumbia","d":197},{"id":"ytY6js9mhwU","t":"GRUPO NECTAR OJITOS HECHICEROS","a":"Grupo 5","g":"cumbia","d":237},{"id":"pc3r5zxln3o","t":"Agua Marina - Así Es El Amor, Paloma Ajena, Basta Ya Mi Amor (En Vivo)","a":"Agua Marina","g":"cumbia","d":606},{"id":"tLLxpu6e6Bo","t":"Los Mirlos - Sonido Amazonico (Video Oficial) (Infopesa)","a":"Los Mirlos","g":"cumbia","d":178},{"id":"D_hi6gyTuGU","t":"Mi suerte CORAZÓN SERRANO","a":"Corazón Serrano","g":"cumbia","d":171},{"id":"kAap4MCq6WY","t":"Los Mirlos - La Danza de Los Mirlos / Cumbia de Los Pajaritos (Video Oficial HD Remaster) (Infopesa)","a":"Los Mirlos","g":"cumbia","d":177},{"id":"pWsEcnrqlhI","t":"Corazón Serrano - En qué brazos estará (Video lyric)","a":"Corazón Serrano","g":"cumbia","d":265},{"id":"dYfG-CJOEpI","t":"Los Mirlos - El Milagro Verde (Infopesa)","a":"Los Mirlos","g":"cumbia","d":165},{"id":"5_AyqSl8jWg","t":"Cariñito El Aguajal -Armonia 10 / Villa Chepita Royal","a":"Armonía 10","g":"cumbia","d":447},{"id":"E-Z6HiG0Eww","t":"Grupo Nectar - El Arbolito","a":"Armonía 10","g":"cumbia","d":211},{"id":"9wwTsmLFWOw","t":"Chacalon - Viento Letra","a":"Chacalón","g":"cumbia","d":223},{"id":"KC8zGJ8iVCA","t":"Armonia 10 - Si te vas (Carlos Soraluz)","a":"Armonía 10","g":"cumbia","d":189},{"id":"9a63cjVsvJU","t":"muchacho provinciano \"Chacalón\"","a":"Chacalón","g":"cumbia","d":209},{"id":"lGPuH2PzhqI","t":"Chicha Libre - Muchachita del Oriente (2010)","a":"Chacalón","g":"cumbia","d":398},{"id":"QFs3PIZb3js","t":"Romeo Santos - Propuesta Indecente (Official Video)","a":"Romeo Santos","g":"bachata","d":269},{"id":"8iPcqtHoR3U","t":"Romeo Santos - Eres Mía (Official Video)","a":"Romeo Santos","g":"bachata","d":292},{"id":"mhHqonzsuoA","t":"Romeo Santos - Imitadora (Official Lyric Video)","a":"Romeo Santos","g":"bachata","d":236},{"id":"8_QY5gFQUTg","t":"Aventura - Obsesión (ft. Judy Santos)","a":"Aventura","g":"bachata","d":256},{"id":"CsziEW_gYhU","t":"Aventura - Los Infieles","a":"Aventura","g":"bachata","d":279},{"id":"6WeMiC-CJHA","t":"Aventura - El Malo","a":"Aventura","g":"bachata","d":359},{"id":"bdOXnTbyk0g","t":"Prince Royce - Darte un Beso (Official Video)","a":"Prince Royce","g":"bachata","d":211},{"id":"v0ckuv1xBm0","t":"Burbujas De Amor","a":"Juan Luis Guerra","g":"bachata","d":249},{"id":"XNGWDH-6yv8","t":"Prince Royce - Corazon Sin Cara (Official Video)","a":"Prince Royce","g":"bachata","d":213},{"id":"PPgQ4nDLh0s","t":"PRINCE ROYCE - Stand By Me (Original Official Video High Quality)","a":"Prince Royce","g":"bachata","d":225},{"id":"WfMO_AETgB0","t":"Bachata Rosa","a":"Juan Luis Guerra","g":"bachata","d":256},{"id":"K8PpV3yK5iA","t":"La Bilirrubina","a":"Juan Luis Guerra","g":"bachata","d":244},{"id":"cm5j4Zbvqag","t":"Grupo Extra - Me Emborrachare con Ataca, Alemana, Daniel y Desiree","a":"Grupo Extra","g":"bachata","d":242},{"id":"WEib3I32vg8","t":"Grupo Extra ► A Traves del Vaso (Bachata Urbana)","a":"Grupo Extra","g":"bachata","d":223},{"id":"DUT5rEU6pqM","t":"Shakira - Hips Don't Lie (featuring Wyclef Jean) (Official 4K Video) ft. Wyclef Jean","a":"Shakira","g":"poplatino","d":219},{"id":"dgjZWyFtnrw","t":"Grupo Extra - Dime Lo Que Te Pasò","a":"Grupo Extra","g":"bachata","d":191},{"id":"pRpeEdMmmQ0","t":"Shakira - Waka Waka (This Time for Africa) (The Official 2010 FIFA World Cup™ Song)","a":"Shakira","g":"poplatino","d":211},{"id":"CocEMWdc7Ck","t":"SHAKIRA || BZRP Music Sessions #53/66","a":"Shakira","g":"poplatino","d":218},{"id":"TyHvyGVs42U","t":"Luis Fonsi, Demi Lovato - Échame La Culpa","a":"Luis Fonsi","g":"poplatino","d":211},{"id":"xFutjZEBTXs","t":"Enrique Iglesias - DUELE EL CORAZON ft. Wisin","a":"Enrique Iglesias","g":"poplatino","d":240},{"id":"EsfSuL-VFBw","t":"Luis Fonsi - Aqui Estoy Yo ft. Aleks Syntek, Noel Schajris, David Bisbal","a":"Luis Fonsi","g":"poplatino","d":248},{"id":"NUsoVlDFqZg","t":"Enrique Iglesias - Bailando ft. Descemer Bueno, Gente De Zona","a":"Enrique Iglesias","g":"poplatino","d":287},{"id":"9sg-A-eS6Ig","t":"Enrique Iglesias - SUBEME LA RADIO (Official Video) ft. Descemer Bueno, Zion & Lennox","a":"Enrique Iglesias","g":"poplatino","d":233},{"id":"5AkDqm-cEgg","t":"Camilo, Pedro Capó - Tutu (Official Video)","a":"Camilo","g":"poplatino","d":211},{"id":"qKp1f7Vn9dM","t":"Camilo - Vida de Rico (Official Video)","a":"Camilo","g":"poplatino","d":190},{"id":"2mY7AFTtYwQ","t":"Camilo - Favorito (Official Video)","a":"Camilo","g":"poplatino","d":211},{"id":"Qz9gmiLBVFA","t":"Sebastián Yatra - Tacones Rojos (Official Video)","a":"Sebastián Yatra","g":"poplatino","d":204},{"id":"NE3IkFadCHM","t":"Sebastián Yatra - Traicionera (Official Video)","a":"Sebastián Yatra","g":"poplatino","d":242},{"id":"Mtau4v6foHA","t":"Carlos Vives, Sebastián Yatra - Robarte un Beso (Official Video)","a":"Sebastián Yatra","g":"poplatino","d":198},{"id":"CJ_zRSv3Hr8","t":"Carlos Vives - Volví a Nacer","a":"Carlos Vives","g":"poplatino","d":304},{"id":"-UV0QGLmYys","t":"Carlos Vives, Shakira - La Bicicleta","a":"Carlos Vives","g":"poplatino","d":238},{"id":"T_FkEw27XJ0","t":"Soda Stereo - De Música Ligera (Official Video)","a":"Soda Stereo","g":"rock","d":211},{"id":"1IgOZaQqB58","t":"Maná - Labios Compartidos (Video Oficial)","a":"Maná","g":"rock","d":286},{"id":"LalPz4lIZYk","t":"Soda Stereo - Persiana Americana (Official Audio)","a":"Soda Stereo","g":"rock","d":294},{"id":"8lbsQyMhMT8","t":"Maná - Rayando El Sol (Video Oficial)","a":"Maná","g":"rock","d":244},{"id":"AVEDgT_lG60","t":"Soda Stereo - En la Ciudad de la Furia (Official Video)","a":"Soda Stereo","g":"rock","d":377},{"id":"fBrX8ym3dBM","t":"Maná - Clavado En Un Bar (Video Oficial)","a":"Maná","g":"rock","d":262},{"id":"sOaMiCDqGH0","t":"Caifanes - La Negra Tomasa (Bilongo (Versión Tropical)[Cover Audio])","a":"Caifanes","g":"rock","d":474},{"id":"gBt1jOtKz6Y","t":"Caifanes - Afuera (Cover Audio)","a":"Caifanes","g":"rock","d":291},{"id":"i17Go6G-siA","t":"Caifanes - No Dejes Qué... ((Cover Audio)(Video))","a":"Caifanes","g":"rock","d":281},{"id":"OG2VEI0yPW8","t":"Los Prisioneros - El Baile De Los Que Sobran (Visualiser)","a":"Los Prisioneros","g":"rock","d":346},{"id":"eDipH-myZWE","t":"Los Prisioneros - Tren Al Sur (Audio)","a":"Los Prisioneros","g":"rock","d":339},{"id":"DejT0oSseHg","t":"Los Prisioneros - Muevan las Industrias (Oficial Video) Alta Calidad","a":"Los Prisioneros","g":"rock","d":209},{"id":"odzd8IFCP_I","t":"Libido - Como Un Perro  (Video Oficial: Coliseo Dibos 2010)","a":"Libido","g":"rock","d":241},{"id":"uIaoKARzbJQ","t":"LIBIDO - Frágil (Video Oficial)","a":"Libido","g":"rock","d":227},{"id":"98Akpf1ph2o","t":"Café Tacvba - Eres (Video Oficial)","a":"Café Tacvba","g":"rock","d":264},{"id":"RGuywvoXS0E","t":"LIBIDO - En Esta Habitación (Video Oficial)","a":"Libido","g":"rock","d":261},{"id":"bKjn26agAEs","t":"Café Tacvba - Chilanga Banda (Video Oficial)","a":"Café Tacvba","g":"rock","d":220},{"id":"A_g3lMcWVy0","t":"QUEVEDO || BZRP Music Sessions #52/66","a":"Bizarrap","g":"trap","d":204},{"id":"Gzs60iBgd3E","t":"DUKI || BZRP Music Sessions #50/66","a":"Bizarrap","g":"trap","d":232},{"id":"W0yp3rSfx3I","t":"Duki - She Don't Give a FO (ft. Khea) Prod. by Omar Varela","a":"Duki","g":"trap","d":230},{"id":"FRthkpJ_NFo","t":"DUKI - Goteo (Video Oficial)","a":"Duki","g":"trap","d":185},{"id":"ymvYySd_P2E","t":"DUKI - GIVENCHY (Video Oficial)","a":"Duki","g":"trap","d":225},{"id":"0VR3dfZf9Yg","t":"Anuel AA, Daddy Yankee, Karol G, Ozuna & J Balvin - China (Video Oficial)","a":"Anuel AA","g":"trap","d":302},{"id":"l7hzxR3blMs","t":"Anuel AA - Sola [Official Audio]","a":"Anuel AA","g":"trap","d":194},{"id":"0w3XwPVxcsw","t":"Anuel AA - Ella Quiere Beber (Remix) ft. Romeo Santos","a":"Anuel AA","g":"trap","d":225},{"id":"W6fme7tcweQ","t":"Myke Towers x @JuhnTV  - BANDIDO (Video Oficial)","a":"Myke Towers","g":"trap","d":233},{"id":"2_f5Os7mKqM","t":"Myke Towers - Diosa (Video Oficial)","a":"Myke Towers","g":"trap","d":215},{"id":"BVdngsy95mY","t":"Myke Towers - Lala (Video Oficial)","a":"Myke Towers","g":"trap","d":198},{"id":"lZiaYpD9ZrI","t":"Ella Baila Sola - (Video Oficial) - Eslabon Armado y Peso Pluma - DEL Records 2023","a":"Peso Pluma","g":"trap","d":188},{"id":"3mchJ-EW9rM","t":"Yng Lvcas & Peso Pluma - La Bebe (Remix) [Video Oficial]","a":"Peso Pluma","g":"trap","d":245},{"id":"3Wnso2A4PZE","t":"LADY GAGA (Video Oficial) - Peso Pluma, Gabito Ballesteros, Junior H","a":"Peso Pluma","g":"trap","d":217},{"id":"CFPLIaMpGrY","t":"Rauw Alejandro - Todo De Ti (Official Video)","a":"Rauw Alejandro","g":"trap","d":212},{"id":"K9mTSekTktw","t":"Rauw Alejandro, Chencho Corleone - Desesperados (Official Video)","a":"Rauw Alejandro","g":"trap","d":232},{"id":"LTCwm9eDY-8","t":"Rauw Alejandro - Touching The Sky (Official Video)","a":"Rauw Alejandro","g":"trap","d":195},{"id":"jUe8uoKdHao","t":"David Guetta - Without You ft. Usher (Official Video)","a":"David Guetta","g":"electronica","d":210},{"id":"90RLzVUuXe4","t":"David Guetta & Bebe Rexha - I'm Good (Blue) [Official Music Video]","a":"David Guetta","g":"electronica","d":178},{"id":"JRfuAukYTKg","t":"David Guetta - Titanium ft. Sia (Official Video)","a":"David Guetta","g":"electronica","d":246},{"id":"_ovdm2yX4MA","t":"Avicii - Levels","a":"Avicii","g":"electronica","d":199},{"id":"IcrbM1l_BoI","t":"Avicii - Wake Me Up (Official Video)","a":"Avicii","g":"electronica","d":273},{"id":"UtF6Jej8yb4","t":"Avicii - The Nights","a":"Avicii","g":"electronica","d":191},{"id":"ebXbLfLACGM","t":"Calvin Harris - Summer (Official Video)","a":"Calvin Harris","g":"electronica","d":234},{"id":"kOkQ4T5WO9E","t":"Calvin Harris, Rihanna - This Is What You Came For (Official Video)","a":"Calvin Harris","g":"electronica","d":240},{"id":"dGghkjpNCQ8","t":"Calvin Harris - Feel So Close (Official Video)","a":"Calvin Harris","g":"electronica","d":247},{"id":"RnBT9uUYb1w","t":"Martin Garrix & Bebe Rexha - In The Name Of Love (Official Video)","a":"Martin Garrix","g":"electronica","d":206},{"id":"e2vBLd5Egnk","t":"Martin Garrix & Dua Lipa - Scared To Be Lonely (Official Video)","a":"Martin Garrix","g":"electronica","d":231},{"id":"gCYcHz2k5x0","t":"Martin Garrix - Animals (Official Video)","a":"Martin Garrix","g":"electronica","d":192},{"id":"wJnBTPUQS5A","t":"Alan Walker - The Spectre","a":"Alan Walker","g":"electronica","d":207},{"id":"60ItHLz5WEA","t":"Alan Walker - Faded","a":"Alan Walker","g":"electronica","d":213},{"id":"1-xGerv5FOk","t":"Alan Walker - Alone","a":"Alan Walker","g":"electronica","d":164},{"id":"m7Bc3pLyij0","t":"Marshmello ft. Bastille - Happier (Official Music Video)","a":"Marshmello","g":"electronica","d":234},{"id":"jzD_yyEcp0M","t":"Marshmello & Anne-Marie - FRIENDS (Music Video) *OFFICIAL FRIENDZONE ANTHEM*","a":"Marshmello","g":"electronica","d":232},{"id":"ALZHF5UqnU4","t":"Marshmello - Alone (Official Music Video)","a":"Marshmello","g":"electronica","d":200},{"id":"wOjzo02Tmck","t":"Luis Miguel - \"La Incondicional\" (Video Oficial)","a":"Luis Miguel","g":"baladas","d":261},{"id":"yG7MPEQm1-w","t":"Luis Miguel - \"Ahora te puedes marchar\" (Video Oficial)","a":"Luis Miguel","g":"baladas","d":191},{"id":"oqBE5d7G2cA","t":"Luis Miguel - Culpable o No (Miénteme Como Siempre) [Video Con Letra]","a":"Luis Miguel","g":"baladas","d":238},{"id":"h98e0rJnWGk","t":"Ricardo Arjona - El Problema (Vídeo Oficial)","a":"Ricardo Arjona","g":"baladas","d":374},{"id":"I9cCPQVPv8o","t":"Ricardo Arjona - Fuiste tú feat. Gaby Moreno (Video Oficial)","a":"Ricardo Arjona","g":"baladas","d":296},{"id":"-apU2sviHCM","t":"Ricardo Arjona - Historia De Taxi  (Video)","a":"Ricardo Arjona","g":"baladas","d":401},{"id":"RgKqxLAhRKE","t":"Juan Gabriel - Amor Eterno (En el Palacio de Bellas Artes)","a":"Juan Gabriel","g":"baladas","d":418},{"id":"1hf7oFCL1Sg","t":"*QUERIDA* - JUAN GABRIEL - 1984 (REMASTERIZADO)  Q.E.P.D (1950-2016)","a":"Juan Gabriel","g":"baladas","d":315},{"id":"P2hM9CLAMu4","t":"JESSE & JOY – ¡Corre! (Video Oficial)","a":"Jesse & Joy","g":"baladas","d":355},{"id":"ga5Bo4YdgH4","t":"Juan Gabriel - Hasta Que Te Conocí (En Vivo [Desde el Instituto Nacional de Bellas Artes])","a":"Juan Gabriel","g":"baladas","d":563},{"id":"TMT9MNM-NHg","t":"JESSE & JOY - Dueles (Video Oficial)","a":"Jesse & Joy","g":"baladas","d":334},{"id":"7m2zyp0vFQc","t":"Jesse & Joy - Corre  (Lyric Video)","a":"Jesse & Joy","g":"baladas","d":289},{"id":"44Qh0p9xE6o","t":"Alejandro Sanz - \"Amiga Mia\" (Video Oficial)","a":"Alejandro Sanz","g":"baladas","d":284},{"id":"ZMUqIoDtSwc","t":"Alejandro Sanz - Corazon Partio [Latin Mix] (Official Music Video)","a":"Alejandro Sanz","g":"baladas","d":282},{"id":"taVlIW3G1VQ","t":"Alejandro Sanz - Y ¿Si Fuera Ella? (Videoclip Oficial 4K)","a":"Alejandro Sanz","g":"baladas","d":238},{"id":"xQNJGZuI6bE","t":"Gian Marco - Se Me Olvidó","a":"Gian Marco","g":"baladas","d":308},{"id":"BNSXJ2xQGmg","t":"Gian Marco - Hoy (Live at the Library of Congress Gershwin Prize 2019)","a":"Gian Marco","g":"baladas","d":277},{"id":"mfUukJvvT5Y","t":"Lamento","a":"Gian Marco","g":"baladas","d":237},{"id":"e-ORhEE9VVg","t":"Taylor Swift - Blank Space","a":"Taylor Swift","g":"hits","d":273},{"id":"4NRXx6U8ABQ","t":"The Weeknd - Blinding Lights (Official Video)","a":"The Weeknd","g":"hits","d":263},{"id":"b1kbLwvqugk","t":"Taylor Swift - Anti-Hero (Official Music Video)","a":"Taylor Swift","g":"hits","d":310},{"id":"nfWlot6h_JM","t":"Taylor Swift - Shake It Off","a":"Taylor Swift","g":"hits","d":242},{"id":"34Na4j8AVgA","t":"The Weeknd - Starboy ft. Daft Punk (Official Video) ft. Daft Punk","a":"The Weeknd","g":"hits","d":274},{"id":"XXYlFuWEuKI","t":"The Weeknd - Save Your Tears (Official Music Video)","a":"The Weeknd","g":"hits","d":249},{"id":"JGwWNGJdvx8","t":"Ed Sheeran - Shape of You (Official Music Video)","a":"Ed Sheeran","g":"hits","d":264},{"id":"2Vv-BfVoq4g","t":"Ed Sheeran - Perfect (Official Music Video)","a":"Ed Sheeran","g":"hits","d":282},{"id":"TUVcZfQe-Kw","t":"Dua Lipa - Levitating Featuring DaBaby (Official Music Video)","a":"Dua Lipa","g":"hits","d":231},{"id":"k2qgadSvNyU","t":"Dua Lipa - New Rules (Official Music Video)","a":"Dua Lipa","g":"hits","d":225},{"id":"lp-EO5I60KA","t":"Ed Sheeran - Thinking Out Loud (Official Music Video)","a":"Ed Sheeran","g":"hits","d":290},{"id":"oygrmJFKYZY","t":"Dua Lipa - Don't Start Now (Official Music Video)","a":"Dua Lipa","g":"hits","d":182},{"id":"UqyT8IEBkvY","t":"Bruno Mars - 24K Magic (Official Music Video)","a":"Bruno Mars","g":"hits","d":227},{"id":"V9PVRfjEBTI","t":"Billie Eilish - BIRDS OF A FEATHER (Official Music Video)","a":"Billie Eilish","g":"hits","d":231},{"id":"DyDfgMOUjCI","t":"Billie Eilish - bad guy","a":"Billie Eilish","g":"hits","d":206},{"id":"kPa7bsKwL-c","t":"Lady Gaga, Bruno Mars - Die With A Smile (Official Music Video)","a":"Bruno Mars","g":"hits","d":253},{"id":"OPf0YbXqDm0","t":"Mark Ronson - Uptown Funk (Official Video) ft. Bruno Mars","a":"Bruno Mars","g":"hits","d":271},{"id":"V1Pl8CzNzCw","t":"Billie Eilish, Khalid - lovely","a":"Billie Eilish","g":"hits","d":201}]};
+const $=id=>document.getElementById(id),LS=localStorage;
+const G={};CAT.genres.forEach(g=>G[g.id]=g);
+const ARTISTS={};CAT.songs.forEach(s=>{(ARTISTS[s.a]=ARTISTS[s.a]||{name:s.a,g:s.g,songs:[]}).songs.push(s)});
+const ld=(k,d)=>{try{return JSON.parse(LS.getItem(k))??d}catch(e){return d}};
+let likes=ld('mm_likes',null);
+let pls=ld('mm_pls',null);
+if(!pls){pls={'Mi lista':ld('musica_list',[]).map(x=>({id:x.id,t:x.title,a:'YouTube'}))}}
+let curPl=LS.getItem('mm_cur')||Object.keys(pls)[0];if(!pls[curPl])curPl=Object.keys(pls)[0];
+let queue=[],qi=-1,shuffle=LS.getItem('mm_shuf')==='1',repeat=LS.getItem('mm_rep')||'off';
+let player,ready=false,pending=null,seeking=false,view='inicio',sub=null;
+const saveP=()=>{LS.setItem('mm_pls',JSON.stringify(pls));LS.setItem('mm_cur',curPl)};
+const thumb=id=>'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=t=>{t=Math.floor(t||0);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const clean=t=>t.replace(/\s*[\(\[][^\)\]]*(official|oficial|video|audio|lyric|letra|visualizer)[^\)\]]*[\)\]]/ig,'').replace(/\s*\|.*$/,'').trim();
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800)}
+// ---------- mixes ----------
+let MIX={},mixN=0;
+function mix(name,sub,songs,color){const id='m'+(mixN++);MIX[id]={name,sub,songs,color};return id}
+function mixCard(id){const m=MIX[id],im=m.songs.slice(0,4).map(s=>`<img src="${thumb(s.id)}" loading="lazy" alt="">`).join('');
+ return `<div class="card" data-mix="${id}"><div class="cover" style="background:${m.color||'#222'}"><div class="mosaic">${im}</div><div class="tag">${esc(m.name)}</div><button class="fab" data-pm="${id}" title="Reproducir mix">${PLAYSVG}</button></div><button class="add2" data-am="${id}" title="Agregar a mi lista">＋</button><div class="ct">${esc(m.name)}</div><div class="cs">${esc(m.sub)}</div></div>`}
+function songCard(s){return `<div class="card" data-song="${s.id}"><div class="cover"><img src="${thumb(s.id)}" loading="lazy" alt=""><button class="fab" data-ps="${s.id}">${PLAYSVG}</button></div><button class="add2" data-as="${s.id}" title="Agregar a mi lista">＋</button><div class="ct">${esc(clean(s.t))}</div><div class="cs">${esc(s.a)}</div></div>`}
+const PLAYSVG='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const byId={};CAT.songs.forEach(s=>byId[s.id]=s);
+function findSong(id){if(byId[id])return byId[id];for(const p in pls){const s=pls[p].find(x=>x.id===id);if(s)return s}return queue.find(x=>x.id===id)}
+// ---------- views ----------
+function render(){MIX={};mixN=0;document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.v===view));
+ const m=$('main');m.innerHTML='<div class="view">'+({inicio:vInicio,explorar:vExplorar,gustos:vGustos,lista:vLista}[view])()+'</div>';m.scrollTop=0}
+function greet(){const h=new Date().getHours();return h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches'}
+function vInicio(){let h=`<h1>${greet()} 👋</h1><p class="sub">Tu música de YouTube, a tu gusto.</p>`;
+ if(!likes||(!likes.genres.length&&!likes.artists.length)){
+  h+=`<h2>Empieza aquí</h2><p class="sub" style="margin-bottom:14px">Elige tus géneros y artistas favoritos y te armo mixes personalizados.</p><button class="btn" onclick="onboard()">Elegir mis gustos</button>`;
+  h+=`<h2>Populares</h2><div class="row">${CAT.genres.map(g=>mixCard(mix('Lo mejor de '+g.name,'Mix de '+g.name,shuf(CAT.songs.filter(s=>s.g===g.id)).slice(0,25),g.color))).join('')}</div>`;return h}
+ const fav=CAT.songs.filter(s=>likes.artists.includes(s.a)||likes.genres.includes(s.g));
+ h+=`<h2>Para ti <button class="btn sm" onclick="playList(shuf(window._fav))">${PLAYSVG.replace('<svg','<svg width=16 height=16')} Reproducir todo</button></h2>`;window._fav=fav;
+ const pt=[mix('Tu Mix Diario','Lo que más te gusta',shuf(fav).slice(0,30),'#1ed760')];
+ likes.artists.forEach(a=>{const ar=ARTISTS[a];if(!ar)return;const rel=shuf(CAT.songs.filter(s=>s.g===ar.g&&s.a!==a)).slice(0,8);pt.push(mix('Mix '+a,a+' y similares',shuf(ar.songs).concat(rel),G[ar.g].color))});
+ likes.genres.forEach(g=>pt.push(mix('Radio '+G[g].name,'Lo mejor de '+G[g].name,shuf(CAT.songs.filter(s=>s.g===g)),G[g].color)));
+ h+=`<div class="row">${pt.map(mixCard).join('')}</div>`;
+ const mine=new Set(likes.genres.concat(likes.artists.map(a=>ARTISTS[a]&&ARTISTS[a].g)));
+ let rel=new Set();mine.forEach(g=>G[g]&&G[g].related.forEach(r=>{if(!mine.has(r))rel.add(r)}));
+ if(!rel.size)CAT.genres.forEach(g=>{if(!mine.has(g.id))rel.add(g.id)});
+ const disc=[...rel].map(g=>mix('Descubre '+G[g].name,'Porque te gusta '+([...mine].filter(x=>G[x]&&G[x].related.includes(g)).map(x=>G[x].name)[0]||'la buena música'),shuf(CAT.songs.filter(s=>s.g===g)).slice(0,20),G[g].color));
+ h+=`<h2>Descubre</h2><div class="row">${disc.map(mixCard).join('')}</div>`;
+ const ds=shuf(CAT.songs.filter(s=>rel.has(s.g))).slice(0,12);
+ h+=`<h2>Canciones que te pueden gustar</h2><div class="row">${ds.map(songCard).join('')}</div>`;
+ const fs=shuf(fav).slice(0,12);
+ h+=`<h2>Tus favoritas</h2><div class="row">${fs.map(songCard).join('')}</div>`;return h}
+function linkBox(){return `<div class="search"><input id="inp" placeholder="Pega un enlace de YouTube o escribe para buscar…" onkeydown="if(event.key==='Enter')addLink()"><button class="btn" onclick="addLink()">Agregar</button><button class="btn sec" onclick="ytSearch()">Buscar en YouTube ↗</button></div>`}
+function vExplorar(){if(sub&&sub.g)return vGenre(sub.g);if(sub&&sub.a)return vArtist(sub.a);
+ let h=`<h1>Explorar</h1><p class="sub">Pega un enlace de YouTube para agregarlo a "${esc(curPl)}", o busca en YouTube.</p>`+linkBox();
+ h+=`<h2>Géneros</h2><div class="grid">${CAT.genres.map(g=>{const s=CAT.songs.find(x=>x.g===g.id);return `<div class="genre" style="background:${g.color}" data-g="${g.id}">${esc(g.name)}<img src="${thumb(s.id)}" alt=""></div>`}).join('')}</div>`;
+ h+=`<h2>Artistas</h2><div class="grid">${Object.values(ARTISTS).map(artistCard).join('')}</div>`;return h}
+function artistCard(a){return `<div class="card" data-ar="${esc(a.name)}"><div class="cover" style="border-radius:50%"><img src="${thumb(a.songs[0].id)}" loading="lazy" alt=""></div><div class="ct" style="text-align:center">${esc(a.name)}</div><div class="cs" style="text-align:center">${esc(G[a.g].name)}</div></div>`}
+function back(){return `<button class="btn sec sm" style="margin-bottom:16px" onclick="sub=null;render()">← Volver</button>`}
+function trackList(songs,opts={}){if(!songs.length)return '<div class="empty">No hay canciones aquí todavía.</div>';window._tl=songs;
+ return `<div class="list">${songs.map((s,i)=>`<div class="tr ${queue[qi]&&queue[qi].id===s.id?'act':''}" data-ti="${i}"><span class="n">${i+1}</span><img src="${thumb(s.id)}" loading="lazy" alt=""><div class="tt"><b>${esc(clean(s.t))}</b><small>${esc(s.a)}</small></div><span class="du">${s.d?fmt(s.d):''}</span><div>${opts.del?`<button class="ib" data-del="${i}" title="Quitar">✕</button>`:`<button class="ib" data-as="${s.id}" title="Agregar a mi lista">＋</button>`}</div></div>`).join('')}</div>`}
+function vGenre(g){const songs=CAT.songs.filter(s=>s.g===g),ar=Object.values(ARTISTS).filter(a=>a.g===g);window._cur=songs;
+ return back()+`<div class="hero"><div class="cover" style="background:${G[g].color}"><div class="mosaic">${songs.slice(0,4).map(s=>`<img src="${thumb(s.id)}">`).join('')}</div></div><div><p class="sub">Género</p><h1>${esc(G[g].name)}</h1><p class="sub">${songs.length} canciones</p><div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn" onclick="playList(window._cur)">${PLAYSVG.replace('<svg','<svg width=16 height=16')} Reproducir</button><button class="btn sec" onclick="playList(shuf(window._cur))">🔀 Aleatorio</button><button class="btn sec" onclick="addMany(window._cur)">＋ Agregar a mi lista</button></div></div></div>`+
+ `<h2>Artistas</h2><div class="row">${ar.map(artistCard).join('')}</div><h2>Canciones</h2>`+trackList(songs)}
+function vArtist(a){const ar=ARTISTS[a];window._cur=ar.songs;const liked=likes&&likes.artists.includes(a);
+ return back()+`<div class="hero"><div class="cover" style="border-radius:50%"><img src="${thumb(ar.songs[0].id)}"></div><div><p class="sub">Artista · ${esc(G[ar.g].name)}</p><h1>${esc(a)}</h1><div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn" onclick="playList(window._cur)">${PLAYSVG.replace('<svg','<svg width=16 height=16')} Reproducir</button><button class="btn sec" onclick="toggleArtist('${esc(a).replace(/'/g,"\\'")}')">${liked?'♥ Te gusta':'♡ Me gusta'}</button><button class="btn sec" onclick="addMany(window._cur)">＋ Agregar a mi lista</button></div></div></div><h2>Canciones</h2>`+trackList(ar.songs)}
+function chipsHTML(){const l=likes||{genres:[],artists:[]};
+ return `<h3>Géneros</h3><div class="chips">${CAT.genres.map(g=>`<button class="chip ${l.genres.includes(g.id)?'on':''}" data-cg="${g.id}">${esc(g.name)}</button>`).join('')}</div>
+ <h3>Artistas</h3><div class="chips">${Object.values(ARTISTS).map(a=>`<button class="chip ${l.artists.includes(a.name)?'on':''}" data-ca="${esc(a.name)}">${esc(a.name)}</button>`).join('')}</div>`}
+function vGustos(){return `<h1>Mis gustos</h1><p class="sub">Toca para elegir lo que te gusta. Con esto armo tus mixes en Inicio.</p><div id="chipsArea">${chipsHTML()}</div><div style="margin-top:26px"><button class="btn" onclick="view='inicio';render()">Ver mis mixes</button></div>`}
+function vLista(){const names=Object.keys(pls),songs=pls[curPl]||[];window._cur=songs;
+ return `<h1>Mis listas</h1><div class="pltabs">${names.map(n=>`<button class="chip ${n===curPl?'on':''}" data-pl="${esc(n)}">${esc(n)} · ${pls[n].length}</button>`).join('')}<button class="chip" onclick="newPl()">＋ Nueva lista</button></div>
+ <div class="hero" style="margin-top:10px"><div class="cover">${songs.length?`<div class="mosaic">${songs.slice(0,4).map(s=>`<img src="${thumb(s.id)}">`).join('')}</div>`:'<div style="display:grid;place-items:center;height:100%;font-size:3rem">🎵</div>'}</div><div><p class="sub">Lista</p><h1>${esc(curPl)}</h1><p class="sub">${songs.length} canciones</p><div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn" onclick="playList(window._cur)">${PLAYSVG.replace('<svg','<svg width=16 height=16')} Reproducir</button><button class="btn sec" onclick="playList(shuf(window._cur))">🔀</button><button class="btn sec sm" onclick="renPl()">Renombrar</button><button class="btn sec sm" onclick="delPl()">Eliminar lista</button></div></div></div>`+linkBox()+trackList(songs,{del:true})}
+// ---------- actions ----------
+function onboard(){$('mbox').innerHTML=`<h1>¿Qué te gusta escuchar? 🎶</h1><p class="sub">Elige géneros y artistas. Puedes cambiarlo cuando quieras en "Mis gustos".</p><div id="chipsArea">${chipsHTML()}</div><div style="margin-top:24px;display:flex;gap:10px;justify-content:flex-end"><button class="btn sec" onclick="closeM()">Ahora no</button><button class="btn" onclick="closeM();view='inicio';render()">Listo</button></div>`;$('modal').classList.add('show');if(!likes){likes={genres:[],artists:[]};saveL()}}
+function closeM(){$('modal').classList.remove('show')}
+function saveL(){LS.setItem('mm_likes',JSON.stringify(likes))}
+function toggleArtist(a){likes=likes||{genres:[],artists:[]};const i=likes.artists.indexOf(a);i<0?likes.artists.push(a):likes.artists.splice(i,1);saveL();render()}
+function addTo(name,songs){let n=0;songs.forEach(s=>{if(!pls[name].some(x=>x.id===s.id)){pls[name].push({id:s.id,t:s.t,a:s.a,d:s.d});n++}});saveP();toast(n?`${n} agregada${n>1?'s':''} a "${name}"`:'Ya estaba en "'+name+'"');if(view==='lista')render()}
+function addMany(songs,ev){const names=Object.keys(pls);if(names.length===1){addTo(names[0],songs);return}
+ const m=$('menu');m.innerHTML='<div class="sub" style="padding:6px 12px">Agregar a…</div>'+names.map(n=>`<button data-to="${esc(n)}">${esc(n)}</button>`).join('');m._songs=songs;
+ const e=window.event||ev;const x=Math.min((e&&e.clientX)||innerWidth/2,innerWidth-210),y=Math.min((e&&e.clientY)||innerHeight/2,innerHeight-50*names.length-60);m.style.left=x+'px';m.style.top=Math.max(10,y)+'px';m.style.display='block'}
+function newPl(){const n=(prompt('Nombre de la nueva lista:')||'').trim();if(!n)return;if(pls[n]){toast('Ya existe esa lista');return}pls[n]=[];curPl=n;saveP();render()}
+function renPl(){const n=(prompt('Nuevo nombre:',curPl)||'').trim();if(!n||n===curPl||pls[n])return;const o={};for(const k in pls)o[k===curPl?n:k]=pls[k];pls=o;curPl=n;saveP();render()}
+function delPl(){if(Object.keys(pls).length===1){pls[curPl]=[];}else{if(!confirm('¿Eliminar la lista "'+curPl+'"?'))return;delete pls[curPl];curPl=Object.keys(pls)[0]}saveP();render()}
+function getId(s){s=s.trim();if(/^[\w-]{11}$/.test(s))return s;const m=s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);return m?m[1]:null}
+async function addLink(){const v=$('inp').value;if(!v.trim())return;const id=getId(v);if(!id){ytSearch();return}
+ let t=id,a='YouTube';try{const r=await fetch('https://www.youtube.com/oembed?url='+encodeURIComponent('https://www.youtube.com/watch?v='+id)+'&format=json');if(r.ok){const j=await r.json();t=j.title||id;a=j.author_name||a}}catch(e){}
+ $('inp').value='';addTo(curPl,[{id,t,a}])}
+function ytSearch(){const q=($('inp')&&$('inp').value.trim())||'';window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank','noopener')}
+// ---------- player ----------
+function playList(songs,start=0){if(!songs||!songs.length)return;queue=songs.slice();playAt(start)}
+function playAt(i){qi=i;const s=queue[i];if(!s)return;$('npT').textContent=clean(s.t);$('npA').textContent=s.a;document.title=clean(s.t)+' · Mi Música';
+ if(ready)player.loadVideoById(s.id);else pending=s.id;document.querySelectorAll('.tr').forEach(r=>{const t=window._tl&&window._tl[+r.dataset.ti];r.classList.toggle('act',!!t&&t.id===s.id)})}
+function next(auto){if(!queue.length)return;if(auto&&repeat==='one'){playAt(qi);return}
+ let n;if(shuffle&&queue.length>1){do n=Math.random()*queue.length|0;while(n===qi)}else n=qi+1;
+ if(n>=queue.length){if(auto&&repeat!=='all'){player.stopVideo();return}n=0}playAt(n)}
+function prev(){if(!queue.length)return;if(ready&&player.getCurrentTime()>3){player.seekTo(0,true);return}playAt((qi-1+queue.length)%queue.length)}
+function setIcon(p){$('pico').innerHTML=p?'<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>':'<path d="M8 5v14l11-7z"/>'}
+function ui(){$('shuf').classList.toggle('on',shuffle);$('rep').classList.toggle('on',repeat!=='off');$('rep').title={off:'Repetir: no',all:'Repetir: todo',one:'Repetir: una'}[repeat];$('rep').style.position='relative';$('rep').dataset.one=repeat==='one';$('rep').innerHTML=$('rep').innerHTML.replace(/<b.*<\/b>/,'')+(repeat==='one'?'<b style="position:absolute;font-size:9px;top:4px;right:4px">1</b>':'')}
+$('play').onclick=()=>{if(!ready)return;if(qi<0){const l=pls[curPl];if(l&&l.length)playList(l);else if(CAT.songs.length)playList(shuf(CAT.songs));return}player.getPlayerState()===1?player.pauseVideo():player.playVideo()};
+$('next').onclick=()=>next(false);$('prev').onclick=prev;
+$('shuf').onclick=()=>{shuffle=!shuffle;LS.setItem('mm_shuf',shuffle?'1':'0');ui();toast(shuffle?'Aleatorio activado':'Aleatorio desactivado')};
+$('rep').onclick=()=>{repeat={off:'all',all:'one',one:'off'}[repeat];LS.setItem('mm_rep',repeat);ui();toast({off:'Repetir desactivado',all:'Repetir toda la lista',one:'Repetir una canción'}[repeat])};
+const vol=$('vol');vol.value=LS.getItem('mm_vol')||80;const paint=r=>r.style.setProperty('--p',(r.value/r.max*100)+'%');paint(vol);
+vol.oninput=()=>{paint(vol);LS.setItem('mm_vol',vol.value);if(ready)player.setVolume(+vol.value)};
+const seek=$('seek');seek.oninput=()=>{seeking=true;paint(seek)};seek.onchange=()=>{seeking=false;if(ready)player.seekTo(player.getDuration()*seek.value/1000,true)};
+setInterval(()=>{if(!ready||seeking||!player.getDuration)return;const c=player.getCurrentTime(),d=player.getDuration();$('cur').textContent=fmt(c);$('dur').textContent=fmt(d);seek.value=d?c/d*1000:0;paint(seek)},500);
+const HTTP=/^https?:$/.test(location.protocol);
+let errStreak=0;
+const ERRS={2:'Enlace de video inválido',5:'Error del reproductor',100:'Video no disponible o eliminado',101:'El dueño no permite reproducirlo aquí',150:'El dueño no permite reproducirlo aquí',153:'YouTube bloqueó el reproductor'};
+window.onYouTubeIframeAPIReady=()=>{const pv={playsinline:1,rel:0,modestbranding:1,enablejsapi:1};if(HTTP)pv.origin=location.origin;
+ player=new YT.Player('player',{width:'100%',height:'100%',host:HTTP?'https://www.youtube-nocookie.com':'https://www.youtube.com',playerVars:pv,
+ events:{onReady:()=>{ready=true;player.setVolume(+vol.value);if(pending){player.loadVideoById(pending);pending=null}},
+ onStateChange:e=>{setIcon(e.data===1);if(e.data===1)errStreak=0;if(e.data===0)next(true)},
+ onError:e=>{const s=queue[qi];toast((ERRS[e.data]||'No se pudo reproducir')+' · saltando');
+  if(!HTTP&&(e.data===153||e.data===150||e.data===101)&&errStreak===0)setTimeout(()=>toast('Abre la página desde su enlace web (https), no como archivo'),2200);
+  if(++errStreak>=Math.min(queue.length,5)){toast('No se pudo reproducir ninguna canción. Revisa tu conexión.');errStreak=0;return}
+  setTimeout(()=>next(true),1200)}}})};
+setTimeout(()=>{if(!window.YT||!window.YT.Player)toast('No cargó YouTube. Revisa tu internet o desactiva el bloqueador de anuncios.')},8000);
+if(!HTTP)setTimeout(()=>toast('Consejo: abre la página desde su enlace https para que YouTube funcione'),1500);
+// ---------- events ----------
+document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>{view=n.dataset.v;sub=null;render()});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-pm],[data-am],[data-ps],[data-as],[data-mix],[data-song],[data-g],[data-ar],[data-ti],[data-del],[data-pl],[data-cg],[data-ca],[data-to]');
+ const menu=$('menu');if(!e.target.closest('#menu')&&!(t&&(t.dataset.am||t.dataset.as)))menu.style.display='none';
+ if(e.target===$('modal'))closeM();if(!t)return;const d=t.dataset;e.stopPropagation();
+ if(d.pm){playList(MIX[d.pm].songs)}else if(d.am){addMany(MIX[d.am].songs,e)}
+ else if(d.ps){playList([findSong(d.ps)])}else if(d.as){addMany([findSong(d.as)],e)}
+ else if(d.mix){playList(MIX[d.mix].songs)}
+ else if(d.song){const s=findSong(d.song),rel=shuf(CAT.songs.filter(x=>x.g===s.g&&x.id!==s.id)).slice(0,15);playList([s].concat(rel))}
+ else if(d.g){view='explorar';sub={g:d.g};render()}else if(d.ar){view='explorar';sub={a:d.ar};render()}
+ else if(d.del!==undefined){pls[curPl].splice(+d.del,1);saveP();render()}
+ else if(d.ti!==undefined){playList(window._tl,+d.ti)}
+ else if(d.pl){curPl=d.pl;saveP();render()}
+ else if(d.to){addTo(d.to,menu._songs);menu.style.display='none'}
+ else if(d.cg||d.ca){likes=likes||{genres:[],artists:[]};const arr=d.cg?likes.genres:likes.artists,v=d.cg||d.ca,i=arr.indexOf(v);i<0?arr.push(v):arr.splice(i,1);saveL();t.classList.toggle('on')}
+});
+ui();render();if(!likes)setTimeout(onboard,400);
+</script>
+<script src="https://www.youtube.com/iframe_api" onerror="toast('No se pudo cargar YouTube. Revisa tu conexión o el bloqueador de anuncios.')"></script>
+</body>
+</html>
